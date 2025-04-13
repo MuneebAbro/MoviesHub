@@ -28,7 +28,7 @@ const HomeScreen = () => {
             <View style={styles.slide}>
               <Image
                 style={styles.image}
-                source={{ uri: 'https://via.placeholder.com/350x150?text=Movie+1' }}
+                source={require('../assets/Movie.jpg')}
               />
               <Text style={styles.carouselText}>Movie 1</Text>
             </View>
