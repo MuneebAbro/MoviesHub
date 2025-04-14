@@ -6,8 +6,10 @@ import {
   Animated,
   Image,
   Dimensions,
+  ScrollView, // Import ScrollView
 } from 'react-native';
 import TopBar from '../components/homeScreen/TopBar';
+import MovieList from '../components/homeScreen/MovieList';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.7;
@@ -56,13 +58,7 @@ const HomeScreen = () => {
 
     return (
       <Animated.View
-        style={[
-          styles.card,
-          {
-            transform: [{ scale }],
-            opacity,
-          },
-        ]}
+        style={[styles.card, { transform: [{ scale }], opacity }]}
       >
         <Image source={item.poster} style={styles.poster} />
         <Text style={styles.movieTitle}>{item.title}</Text>
@@ -71,8 +67,15 @@ const HomeScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <TopBar />
+
+    <View  style={styles.container}>
+  <TopBar />
+  
+   
+    <ScrollView style={styles.scrollViewContainer}>
+  
+    
+     
       <View style={styles.content}>
         <Text style={styles.sectionTitle}>Trending Movies</Text>
         <Animated.FlatList
@@ -91,15 +94,23 @@ const HomeScreen = () => {
           )}
           scrollEventThrottle={16}
         />
-      </View>
-    </View>
+
+        {/* All Movies section */}
+        <View style={{ marginTop: 30 }}>
+          <Text style={styles.sectionTitle}>All Movies</Text>
+          <MovieList movies={movies.filter((m) => m.poster)} />
+        </View>
+        </View>
+        </ScrollView> 
+        </View>
+      
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000', // just looks better 👌
+  
   },
   content: {
     flex: 1,
@@ -112,8 +123,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10,
   },
+  scrollViewContainer: {
+    flex: 1,
+  },
   scrollContent: {
-   marginTop: 40
+    marginTop: 40,
   },
   card: {
     width: CARD_WIDTH,
