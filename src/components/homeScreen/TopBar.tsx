@@ -7,13 +7,13 @@ const TopBar = () => {
     <View>
          <View style={styles.header}>
            <TouchableOpacity>
-             <Icon name="menu" size={28} color="#fff" />
+             <Icon name="menu" size={22} color="#fff" />
            </TouchableOpacity>
    
            <Text style={styles.title}>MovieHub</Text>
    
            <TouchableOpacity>
-             <Icon name="search" size={28} color="#fff" />
+             <Icon name="search" size={22} color="#fff" />
            </TouchableOpacity>
          </View>
     </View>
