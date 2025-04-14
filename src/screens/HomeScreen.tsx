@@ -1,45 +1,95 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, Image, Dimensions } from 'react-native';
-import TopBar from '../components/homeScreen/TopBar'; // Assuming you already have a custom TopBar component
+import React, { useRef } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Animated,
+  Image,
+  Dimensions,
+} from 'react-native';
+import TopBar from '../components/homeScreen/TopBar';
 
 const { width } = Dimensions.get('window');
-const POSTER_WIDTH = width * 0.35; // Poster width
-const POSTER_HEIGHT = POSTER_WIDTH * 1.5; // Poster height with 2:3 aspect ratio
+const CARD_WIDTH = width * 0.7;
+const SPACING = 10;
+const POSTER_HEIGHT = CARD_WIDTH * 1.5;
+const ITEM_SIZE = CARD_WIDTH + SPACING;
+const SPACER_WIDTH = (width - CARD_WIDTH) / 2;
 
-// Define a Movie interface for better type safety
 interface Movie {
   id: string;
   title: string;
-  poster: any; // The image source, can be either a URL or a local image
+  poster: any;
 }
 
 const HomeScreen = () => {
-  // Dummy data for movie posters (using local images)
+  const scrollX = useRef(new Animated.Value(0)).current;
+
   const movies: Movie[] = [
-    { id: '1', title: 'Movie 1', poster: require('../assets/movie.jpg') }, // Local image
-    { id: '2', title: 'Movie 2', poster: require('../assets/movie.jpg') }, // Local image
-    { id: '3', title: 'Movie 3', poster: require('../assets/movie.jpg') }, // Local image
+    { id: 'left-spacer', title: '', poster: null },
+    { id: '1', title: 'Movie 1', poster: require('../assets/movie.jpg') },
+    { id: '2', title: 'Movie 2', poster: require('../assets/movie.jpg') },
+    { id: '3', title: 'Movie 3', poster: require('../assets/movie.jpg') },
+    { id: 'right-spacer', title: '', poster: null },
   ];
 
-  const renderMovieCard = ({ item }: { item: Movie }) => (
-    <View style={styles.card}>
-      <Image source={item.poster} style={styles.poster} />
-      <Text style={styles.movieTitle}>{item.title}</Text>
-    </View>
-  );
+  const renderMovieCard = ({ item, index }: { item: Movie; index: number }) => {
+    if (!item.poster) return <View style={{ width: SPACER_WIDTH }} />;
+
+    const inputRange = [
+      (index - 2) * ITEM_SIZE,
+      (index - 1) * ITEM_SIZE,
+      index * ITEM_SIZE,
+    ];
+
+    const scale = scrollX.interpolate({
+      inputRange,
+      outputRange: [0.8, 1, 0.8],
+      extrapolate: 'clamp',
+    });
+
+    const opacity = scrollX.interpolate({
+      inputRange,
+      outputRange: [0.5, 1, 0.5],
+      extrapolate: 'clamp',
+    });
+
+    return (
+      <Animated.View
+        style={[
+          styles.card,
+          {
+            transform: [{ scale }],
+            opacity,
+          },
+        ]}
+      >
+        <Image source={item.poster} style={styles.poster} />
+        <Text style={styles.movieTitle}>{item.title}</Text>
+      </Animated.View>
+    );
+  };
 
   return (
     <View style={styles.container}>
-      <TopBar /> {/* Your custom TopBar component */}
+      <TopBar />
       <View style={styles.content}>
         <Text style={styles.sectionTitle}>Trending Movies</Text>
-        <FlatList
+        <Animated.FlatList
           data={movies}
-          renderItem={renderMovieCard}
+          horizontal
           keyExtractor={(item) => item.id}
-          horizontal={true} // Scroll horizontally
-          showsHorizontalScrollIndicator={false} // Hide scroll indicator
+          showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
+          renderItem={renderMovieCard}
+          snapToInterval={ITEM_SIZE}
+          decelerationRate="fast"
+          bounces={false}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+            { useNativeDriver: true }
+          )}
+          scrollEventThrottle={16}
         />
       </View>
     </View>
@@ -49,36 +99,37 @@ const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-   
+    backgroundColor: '#000', // just looks better 👌
   },
   content: {
     flex: 1,
-    marginTop: 20,
-    paddingHorizontal: 10,
+    marginTop: 8,
   },
   sectionTitle: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
+    paddingHorizontal: 10,
   },
   scrollContent: {
-    paddingLeft: 10,
+   marginTop: 40
   },
   card: {
-    marginRight: 15,
+    width: CARD_WIDTH,
+    marginHorizontal: SPACING / 2,
     alignItems: 'center',
   },
   poster: {
-    width: POSTER_WIDTH,
+    width: '100%',
     height: POSTER_HEIGHT,
-    borderRadius: 10,
-    backgroundColor: '#444', // Placeholder color if image fails to load
+    borderRadius: 12,
+    backgroundColor: '#333',
   },
   movieTitle: {
     color: '#fff',
     fontSize: 14,
-    marginTop: 5,
+    marginTop: 6,
     textAlign: 'center',
   },
 });
