@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, Dimensions, TouchableOpacity } from 'react-native';
 
 const { width } = Dimensions.get('window');
 const ITEM_WIDTH = 120;
@@ -14,14 +14,15 @@ interface Movie {
 
 interface Props {
   movies: Movie[];
+  onPress: (movieId: string) => void; // Add the onPress callback
 }
 
-const MovieList: React.FC<Props> = ({ movies }) => {
+const MovieList: React.FC<Props> = ({ movies, onPress }) => {
   const renderItem = ({ item }: { item: Movie }) => (
-    <View style={styles.itemContainer}>
+    <TouchableOpacity onPress={() => onPress(item.id)} style={styles.itemContainer} activeOpacity={1}>
       <Image source={item.poster} style={styles.poster} />
       
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -44,6 +45,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     width: ITEM_WIDTH,
     marginRight: ITEM_SPACING,
+    position: 'relative',
   },
   poster: {
     width: ITEM_WIDTH,
@@ -55,10 +57,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 13,
     marginTop: 12,
-    justifyContent:'flex-end',
-    alignContent:'flex-end',
     textAlign: 'center',
-    position:'absolute'
+    position: 'absolute',
+    bottom: 8, // Position the title at the bottom of the poster
+    width: '100%',
   },
 });
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, FlatList, Image, Dimensions, TouchableOpacity, ActivityIndicator } from 'react-native';
 import axios from 'axios';
 import Icon from 'react-native-vector-icons/Feather';
 import { useNavigation } from '@react-navigation/native';  // Import the hook
@@ -10,18 +10,17 @@ const { width } = Dimensions.get('window');
 const ITEM_MARGIN = 10;
 const ITEM_WIDTH = (width - ITEM_MARGIN * 4) / 3; // 3 items + margins
 
+
 interface Movie {
   id: string;
   title: string;
   poster: any;
 }
-
-type TopRatedScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'TopRatedScreen'>;
-
-const TopRatedScreen = () => {
-  const [topRatedMovies, setTopRatedMovies] = useState<Movie[]>([]);
-
-  const navigation = useNavigation<TopRatedScreenNavigationProp>(); // Type the navigation
+type TopRatedScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'UpcommingScreen'>;
+const UpcommingScreen = () => {
+  const [UpcommingMovies, setUpcommingMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState<boolean>(true); // New loading state
+    const navigation = useNavigation<TopRatedScreenNavigationProp>(); // Type the navigation
 
   useEffect(() => {
     const fetchTopRated = async () => {
@@ -32,7 +31,7 @@ const TopRatedScreen = () => {
           Accept: 'application/json',
         };
 
-        const res = await axios.get('https://api.themoviedb.org/3/movie/top_rated', {
+        const res = await axios.get('https://api.themoviedb.org/3/movie/upcoming', {
           headers,
         });
 
@@ -44,9 +43,11 @@ const TopRatedScreen = () => {
             poster: { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` },
           }));
 
-        setTopRatedMovies(movies);
+        setUpcommingMovies(movies);
+        setLoading(false); // Set loading to false after data is fetched
       } catch (error) {
         console.error('Error fetching top rated movies:', error);
+        setLoading(false); // Make sure to stop the loading state if there's an error
       }
     };
 
@@ -54,14 +55,15 @@ const TopRatedScreen = () => {
   }, []);
 
   const renderItem = ({ item }: { item: Movie }) => (
-    <TouchableOpacity
-      onPress={() => navigation.navigate('MovieDetail', { movieId: item.id })} // Navigation with correct parameters
-      style={styles.itemContainer}
-      activeOpacity={1}
-    >
-      <Image source={item.poster} style={styles.poster} />
-    </TouchableOpacity>
-  );
+      <TouchableOpacity
+        onPress={() => navigation.navigate('MovieDetail', { movieId: item.id })} // Navigation with correct parameters
+        style={styles.itemContainer}
+        activeOpacity={1}
+      >
+        <Image source={item.poster} style={styles.poster} />
+      </TouchableOpacity>
+    );
+  
 
   return (
     <View style={styles.containerMain}>
@@ -69,37 +71,46 @@ const TopRatedScreen = () => {
         <TouchableOpacity>
           <Icon name="menu" size={22} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.title}>Top Rated Movies</Text>
+
+        <Text style={styles.title}>Upcoming Movies</Text>
+
         <TouchableOpacity>
           <Icon name="heart" size={22} color="#fff" />
         </TouchableOpacity>
       </View>
 
-      <View style={styles.container}>
-        <FlatList
-          data={topRatedMovies}
-          keyExtractor={(item) => item.id}
-          numColumns={3}
-          renderItem={renderItem}
-          showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.grid}
-        />
-      </View>
+      {/* Loading Spinner */}
+      {loading ? (
+        <View style={styles.loaderContainer}>
+          <ActivityIndicator size="large" color="#FFD700" />
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <FlatList
+            data={UpcommingMovies}
+            keyExtractor={(item) => item.id}
+            numColumns={3}
+            renderItem={renderItem}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={styles.grid}
+          />
+        </View>
+      )}
     </View>
   );
 };
 
-export default TopRatedScreen;
+export default UpcommingScreen;
 
 const styles = StyleSheet.create({
+  containerMain: {
+    flex: 1,
+    backgroundColor: '#121212',
+  },
   container: {
     flex: 1,
     backgroundColor: '#121212',
     padding: ITEM_MARGIN,
-  },
-  containerMain: {
-    flex: 1,
-    backgroundColor: '#121212',
   },
   grid: {
     justifyContent: 'space-between',
@@ -128,5 +139,11 @@ const styles = StyleSheet.create({
     aspectRatio: 2 / 3, // poster shape
     borderRadius: 8,
     backgroundColor: '#333',
+  },
+  loaderContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#121212',
   },
 });

@@ -10,7 +10,11 @@ const TopBar = () => {
              <Icon name="menu" size={22} color="#fff" />
            </TouchableOpacity>
    
-           <Text style={styles.title}>MovieHub</Text>
+   <View style={styles.header}>
+   <Text style={styles.titleGold}>M</Text>
+   <Text style={styles.title}>ovieHub</Text>
+   </View>
+          
    
            <TouchableOpacity>
              <Icon name="search" size={22} color="#fff" />
@@ -31,15 +35,21 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
-      paddingTop: 8,
+      paddingTop: 4,
       paddingHorizontal: 20,
-      paddingBottom: 10,
+      paddingBottom: 4,
     },
     title: {
       fontSize: 20,
       fontWeight: 'bold',
       color: '#fff',
     },
+    titleGold: {
+      fontSize: 22,
+      fontWeight: 'bold',
+      color: '#FFD700',
+    },
+   
    
   });
   
