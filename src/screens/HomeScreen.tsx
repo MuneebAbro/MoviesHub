@@ -153,7 +153,9 @@ const HomeScreen = () => {
   
   if (loading) {
     return (
+      
       <View style={styles.loadingContainer}>
+        
         <Text style={styles.loadingText}>Loading...</Text>
       </View>
     );

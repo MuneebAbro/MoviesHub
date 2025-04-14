@@ -4,6 +4,7 @@ import axios from 'axios';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/Navigation';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { SafeAreaView, StatusBar, Platform } from 'react-native';
 
 type MovieDetailRouteProp = RouteProp<RootStackParamList, 'MovieDetail'>;
 
@@ -12,6 +13,7 @@ const MovieDetailScreen = () => {
   const movieId = route.params.movieId; // Get the movieId from route parameters
   const [movie, setMovie] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const [imageLoading, setImageLoading] = useState<boolean>(true); // Track image loading state
 
   // Fetch movie details
   useEffect(() => {
@@ -21,7 +23,7 @@ const MovieDetailScreen = () => {
           `https://api.themoviedb.org/3/movie/${movieId}`,
           {
             headers: {
-              Authorization: 'Bearer YOUR_API_KEY', // Replace with your API key
+              Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNWJkMjQ1ZWM2OTQ2OTg0OWM4ZmU1ZmFlMzcxMjRiYiIsIm5iZiI6MTc0NDI3MzUyMC43MDcsInN1YiI6IjY3Zjc4MDcwZWE4MGQ4NTE3NTk5NTgxNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.9sy-_j8LGrabTBwQhhVo1p3Snc0rRUG9GBcXjtOSogA', // Replace with your API key
               Accept: 'application/json',
             },
           }
@@ -36,6 +38,11 @@ const MovieDetailScreen = () => {
 
     fetchMovieDetails();
   }, [movieId]);
+
+  // Handle image loading state
+  const handleImageLoad = () => {
+    setImageLoading(false); // Set image loading state to false when image is loaded
+  };
 
   // If loading, show the loader
   if (loading) {
@@ -56,42 +63,89 @@ const MovieDetailScreen = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <Image
-        source={{ uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }}
-        style={styles.poster}
-      />
-      <View style={styles.detailsContainer}>
-        <Text style={styles.title}>{movie.title}</Text>
-        <Text style={styles.releaseDate}>Release Date: {movie.release_date}</Text>
-        <Text style={styles.rating}>Rating: {movie.vote_average} / 10</Text>
-        <Text style={styles.overview}>{movie.overview}</Text>
-      </View>
-    </ScrollView>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+
+      <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
+        <View style={styles.posterContainer}>
+          {imageLoading && <View style={styles.placeholder} />}
+          <Image
+            source={{ uri: `https://image.tmdb.org/t/p/w780${movie.poster_path}` }}
+            style={styles.poster}
+            onLoad={handleImageLoad}
+          />
+          <View style={styles.titleOverlay}>
+  <Text style={styles.title}>{movie.title}</Text>
+</View>
+
+        </View>
+  
+        <View style={styles.detailsContainer}>
+          <Text style={styles.title}>{movie.title}</Text>
+          <Text style={styles.releaseDate}>Release Date: {movie.release_date}</Text>
+          <Text style={styles.rating}>Rating: {movie.vote_average} / 10</Text>
+          <Text style={styles.overview}>{movie.overview}</Text>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
+  
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#121212',
-    paddingTop: 20,
-    paddingHorizontal: 15,
+    
+    
+  },
+  posterContainer: {
+    position: 'relative',
+  },
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#121212',
+    paddingTop: Platform.OS === 'android' ? 0 : 0, // ignore top safe area
+  },
+  
+  placeholder: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: '#555',
+    
+    height: 500,
   },
   poster: {
     width: '100%',
-    height: 400,
-    borderRadius: 12,
+    height: 500,
+    marginTop:0
   },
+  
   detailsContainer: {
     marginTop: 15,
+    paddingHorizontal: 15,
   },
+  titleOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
+  },
+  
   title: {
     color: '#fff',
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 10,
   },
+  
   releaseDate: {
     color: '#fff',
     fontSize: 14,

@@ -7,7 +7,7 @@ const App = () => {
   const backgroundColor = '#121212'
   return (
     <>
-      <StatusBar barStyle="light-content" backgroundColor="#121212" />
+     
       <Navigation />
     </>
   );
