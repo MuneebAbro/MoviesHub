@@ -11,8 +11,9 @@ const TopBar = () => {
   return (
     <View>
          <View style={styles.header}>
-           <TouchableOpacity style={styles.paddingbtn}>
-             <Icon name="menu" size={22} color="#fff" />
+         <TouchableOpacity style={styles.backbtn} onPress={() => navigation.goBack()}>
+
+             <Icon name="chevron-left" size={22} color="#000" />
            </TouchableOpacity>
    
    <View style={styles.header}>
@@ -21,8 +22,8 @@ const TopBar = () => {
    </View>
           
    
-           <TouchableOpacity onPress={() => navigation.navigate('SearchScreen')} style={styles.paddingbtn}>
-             <Icon name="search" size={22} color="#fff" />
+           <TouchableOpacity style={styles.paddingbtn}>
+             <Icon name="refresh-cw" size={22} color="#fff" />
            </TouchableOpacity>
          </View>
     </View>
@@ -35,19 +36,19 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#000',
+      
     },
     header: {
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'space-between',
       paddingTop: 4,
-      paddingHorizontal: 20,
-      paddingBottom: 4,
+      paddingHorizontal: 10,
+      paddingBottom: 12,
     },
     title: {
       fontSize: 20,
       fontWeight: 'bold',
-      fontFamily: 'montserrat',
       color: '#fff',
     },
     titleGold: {
@@ -55,11 +56,15 @@ const styles = StyleSheet.create({
       fontWeight: 'bold',
       color: '#FFD700',
     },
+   backbtn:{
+    padding:8,
+    backgroundColor:'#FFD700',
+    borderRadius:12
+   },
+   paddingbtn:{
+    padding:8,
+
+   }
    
-    paddingbtn:{
-      padding:8,
-  
-     }
-     
   });
   

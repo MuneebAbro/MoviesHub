@@ -23,7 +23,7 @@ const UpcommingScreen = () => {
     const navigation = useNavigation<TopRatedScreenNavigationProp>(); // Type the navigation
 
   useEffect(() => {
-    const fetchTopRated = async () => {
+    const fetchUpcoming = async () => {
       try {
         const headers = {
           Authorization:
@@ -46,12 +46,12 @@ const UpcommingScreen = () => {
         setUpcommingMovies(movies);
         setLoading(false); // Set loading to false after data is fetched
       } catch (error) {
-        console.error('Error fetching top rated movies:', error);
+        console.error('Error fetching top upcoming movies:', error);
         setLoading(false); // Make sure to stop the loading state if there's an error
       }
     };
 
-    fetchTopRated();
+    fetchUpcoming();
   }, []);
 
   const renderItem = ({ item }: { item: Movie }) => (

@@ -6,8 +6,9 @@ import {
   Animated,
   Image,
   Dimensions,
-  ScrollView,
+  ScrollView, 
   TouchableOpacity,
+  StatusBar,
 } from 'react-native';
 import TopBar from '../components/homeScreen/TopBar';
 import MovieList from '../components/homeScreen/MovieList';
@@ -17,7 +18,6 @@ import MovieCard from '../components/general/MovieCard'; // update with correct 
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/Navigation'; // ✅ your path may vary
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'HomeScreen'>;
-
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.7;
@@ -32,7 +32,10 @@ interface Movie {
   poster: any;
 }
 
+const placeholderImage = require('../assets/movie.jpg'); // Import your placeholder image
+
 const HomeScreen = () => {
+
   const [trendingMovies, setTrendingMovies] = useState<Movie[]>([]); // State for trending movies
   const [allMovies, setAllMovies] = useState<Movie[]>([]); // State for popular movies (All Movies)
   const [upcomingMovies, setUpcomingMovies] = useState<Movie[]>([]); // State for upcoming movies
@@ -40,14 +43,11 @@ const HomeScreen = () => {
   const navigation = useNavigation<HomeScreenNavigationProp>();
   const [loading, setLoading] = useState(true); // 👈 Add this
 
-
-
-
   useEffect(() => {
     const fetchMovies = async () => {
       try {
         const headers = {
-          Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNWJkMjQ1ZWM2OTQ2OTg0OWM4ZmU1ZmFlMzcxMjRiYiIsIm5iZiI6MTc0NDI3MzUyMC43MDcsInN1YiI6IjY3Zjc4MDcwZWE4MGQ4NTE3NTk5NTgxNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.9sy-_j8LGrabTBwQhhVo1p3Snc0rRUG9GBcXjtOSogA',  // Make sure to replace with your actual API key
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNWJkMjQ1ZWM2OTQ2OTg0OWM4ZmU1ZmFlMzcxMjRiYiIsIm5iZiI6MTc0NDI3MzUyMC43MDcsInN1YiI6IjY3Zjc4MDcwZWE4MGQ4NTE3NTk5NTgxNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.9sy-_j8LGrabTBwQhhVo1p3Snc0rRUG9GBcXjtOSogA',  // Replace with your API key
           Accept: 'application/json',
         };
 
@@ -62,7 +62,9 @@ const HomeScreen = () => {
           .map((movie: any) => ({
             id: movie.id.toString(),
             title: movie.title,
-            poster: { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` },
+            poster: movie.poster_path
+              ? { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }
+              : placeholderImage,
           }));
 
         const paddedTrending = [
@@ -85,7 +87,9 @@ const HomeScreen = () => {
           .map((movie: any) => ({
             id: movie.id.toString(),
             title: movie.title,
-            poster: { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` },
+            poster: movie.poster_path
+              ? { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }
+              : placeholderImage,
           }));
 
         setAllMovies(allMovies);
@@ -102,7 +106,9 @@ const HomeScreen = () => {
           .map((movie: any) => ({
             id: movie.id.toString(),
             title: movie.title,
-            poster: { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` },
+            poster: movie.poster_path
+              ? { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }
+              : placeholderImage,
           }));
 
         setUpcomingMovies(upcomingMovies);
@@ -115,8 +121,6 @@ const HomeScreen = () => {
 
     fetchMovies();
   }, []);
-
- 
 
   const renderMovieCard = ({ item, index }: { item: Movie; index: number }) => {
     if (!item.poster) return <View style={{ width: SPACER_WIDTH }} />;
@@ -139,9 +143,19 @@ const HomeScreen = () => {
       extrapolate: 'clamp',
     });
   
+    // If it's a placeholder, render non-touchable
+    if (item.id.startsWith('placeholder')) {
+      return (
+        <View style={styles.card}>
+          <MovieCard poster={item.poster} scale={scale} opacity={opacity} />
+        </View>
+      );
+    }
+  
+    // Normal interactive movie card
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate('MovieDetail', { movieId: item.id })} // Pass movieId as a parameter
+        onPress={() => navigation.navigate('MovieDetail', { movieId: item.id })}
         style={styles.card}
         activeOpacity={1}
       >
@@ -151,53 +165,57 @@ const HomeScreen = () => {
   };
   
   
-  if (loading) {
-    return (
-      
-      <View style={styles.loadingContainer}>
-        
-        <Text style={styles.loadingText}>Loading...</Text>
-      </View>
-    );
-  }
+
+  const placeholderPoster = require('../assets/movie.jpg');
+
+// Placeholder movies (like 5 dummies)
+const placeholderMovies = Array.from({ length: 3 }).map((_, index) => ({
+  id: `placeholder-${index}`,
+  title: 'Loading...',
+  poster: placeholderPoster,
+}));
 
   return (
     <View style={styles.container}>
+      <StatusBar backgroundColor="#121212" barStyle="light-content" />
       <TopBar />
 
       <ScrollView style={styles.scrollViewContainer}>
         <View style={styles.content}>
           {/* Trending Movies Section */}
-         
           <Animated.FlatList
-            data={trendingMovies}
-            horizontal
-            keyExtractor={(item) => item.id}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}
-            renderItem={renderMovieCard}
-            snapToInterval={ITEM_SIZE}
-            decelerationRate="fast"
-            bounces={false}
-            onScroll={Animated.event(
-              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-              { useNativeDriver: true }
-            )}
-            scrollEventThrottle={16}
-          />
+  data={trendingMovies.length > 0 ? trendingMovies : placeholderMovies}
+  horizontal
+  keyExtractor={(item) => item.id}
+  showsHorizontalScrollIndicator={false}
+  contentContainerStyle={styles.scrollContent}
+  renderItem={renderMovieCard}
+  snapToInterval={ITEM_SIZE}
+  decelerationRate="fast"
+  bounces={false}
+  onScroll={Animated.event(
+    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+    { useNativeDriver: true }
+  )}
+  scrollEventThrottle={16}
+/>
 
           {/* All Movies Section */}
           <View style={styles.sectionHeaderList}>
             <Text style={styles.sectionTitle}>Top Rated Movies</Text>
-            <TouchableOpacity style={styles.seeAllButton}  onPress={() => navigation.navigate('TopRatedScreen')}>
+            <TouchableOpacity style={styles.seeAllButton} onPress={() => navigation.navigate('TopRatedScreen')}>
               <Text style={styles.seeAllText}>See All</Text>
             </TouchableOpacity>
           </View>
-          <MovieList movies={allMovies.filter((movie) => movie.poster !== null)}
-           onPress={(movieId) => {
-            // Handle the press event here, e.g., navigate to the movie detail screen
-            navigation.navigate('MovieDetail', { movieId });
-          }} />
+          <MovieList
+  movies={allMovies.length > 0 ? allMovies : placeholderMovies}
+  onPress={(movieId) => {
+    if (!movieId.startsWith('placeholder')) {
+      navigation.navigate('MovieDetail', { movieId });
+    }
+  }}
+/>
+
 
           {/* Upcoming Movies Section */}
           <View style={styles.sectionHeaderList}>
@@ -206,17 +224,19 @@ const HomeScreen = () => {
               <Text style={styles.seeAllText}>See All</Text>
             </TouchableOpacity>
           </View>
-          <MovieList movies={upcomingMovies.filter((movie) => movie.poster !== null)}
-           onPress={(movieId) => {
-            // Handle the press event here, e.g., navigate to the movie detail screen
-            navigation.navigate('MovieDetail', { movieId });
-          }} />
+          <MovieList
+  movies={upcomingMovies.length > 0 ? upcomingMovies : placeholderMovies}
+  onPress={(movieId) => {
+    if (!movieId.startsWith('placeholder')) {
+      navigation.navigate('MovieDetail', { movieId });
+    }
+  }}
+/>
         </View>
       </ScrollView>
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
