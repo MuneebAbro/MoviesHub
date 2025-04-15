@@ -11,6 +11,10 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		8A39A534F3474987A955EE4C /* Monster.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3C6AA2DF676B4626BC6BA9A7 /* Monster.ttf */; };
+		58992386F3E448A4A8D3B954 /* MonsterBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8651E0E68A254B6196735DCB /* MonsterBold.ttf */; };
+		04E19D46A10A479984E75F81 /* rubik.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9FD92D55B6B643C5B6414F47 /* rubik.ttf */; };
+		49D0DBB97198482B9B5D09F8 /* rubikSemi.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 269914F35932451C9890CFA9 /* rubikSemi.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +39,10 @@
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = MoviesApp/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = MoviesApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		3C6AA2DF676B4626BC6BA9A7 /* Monster.ttf */ = {isa = PBXFileReference; name = "Monster.ttf"; path = "../src/assets/fonts/Monster.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		8651E0E68A254B6196735DCB /* MonsterBold.ttf */ = {isa = PBXFileReference; name = "MonsterBold.ttf"; path = "../src/assets/fonts/MonsterBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9FD92D55B6B643C5B6414F47 /* rubik.ttf */ = {isa = PBXFileReference; name = "rubik.ttf"; path = "../src/assets/fonts/rubik.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		269914F35932451C9890CFA9 /* rubikSemi.ttf */ = {isa = PBXFileReference; name = "rubikSemi.ttf"; path = "../src/assets/fonts/rubikSemi.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,6 +101,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				3B53744B63DC4F4CB390316D /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -115,6 +124,18 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
+		};
+		3B53744B63DC4F4CB390316D /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				3C6AA2DF676B4626BC6BA9A7 /* Monster.ttf */,
+				8651E0E68A254B6196735DCB /* MonsterBold.ttf */,
+				9FD92D55B6B643C5B6414F47 /* rubik.ttf */,
+				269914F35932451C9890CFA9 /* rubikSemi.ttf */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -185,6 +206,10 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				8A39A534F3474987A955EE4C /* Monster.ttf in Resources */,
+				58992386F3E448A4A8D3B954 /* MonsterBold.ttf in Resources */,
+				04E19D46A10A479984E75F81 /* rubik.ttf in Resources */,
+				49D0DBB97198482B9B5D09F8 /* rubikSemi.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

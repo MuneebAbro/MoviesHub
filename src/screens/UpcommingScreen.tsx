@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily:'MonsterBold',
     color: '#fff',
   },
   itemContainer: {

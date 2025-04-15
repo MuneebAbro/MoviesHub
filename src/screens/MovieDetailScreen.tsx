@@ -7,7 +7,10 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView, StatusBar, Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Linking, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'; // make sure you have this installed
+import Icon from 'react-native-vector-icons/Feather'; // make sure you have this installed
+import Icon2 from 'react-native-vector-icons/Ionicons'; // make sure you have this installed
+
+
 
 type MovieDetailRouteProp = RouteProp<RootStackParamList, 'MovieDetail'>;
 
@@ -19,6 +22,8 @@ const MovieDetailScreen = () => {
   const [imageLoading, setImageLoading] = useState<boolean>(true); // Track image loading state
   const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
   const [trailerLoaded, setTrailerLoaded] = useState<boolean>(false); // Track whether the trailer has been loaded
+  const navigation = useNavigation<any>();
+
 
   // Fetch movie details
   useEffect(() => {
@@ -97,6 +102,10 @@ const MovieDetailScreen = () => {
       <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
 
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
+        <TouchableOpacity style={styles.backbtn} onPress={() => navigation.goBack()}>
+                
+                             <Icon name="chevron-left" size={22} color="#000" />
+                           </TouchableOpacity>
         <View style={styles.posterContainer}>
           {imageLoading && <View style={styles.placeholder} />}
           {imageLoading && (
@@ -112,7 +121,7 @@ const MovieDetailScreen = () => {
             resizeMode="cover"
           />
 
-          <LinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={styles.gradientOverlay}>
+          <LinearGradient colors={['transparent', 'rgba(0,0,0.5,0.9)']} style={styles.gradientOverlay}>
             <Text style={styles.title}>{movie.title}</Text>
           </LinearGradient>
         </View>
@@ -129,7 +138,7 @@ const MovieDetailScreen = () => {
           {trailerUrl && trailerLoaded && (
             <TouchableOpacity style={styles.playButton} onPress={() => Linking.openURL(trailerUrl)}>
               <View style={styles.btnBkg}>
-                <Icon name="play-circle" size={58} color="#fff" />
+                <Icon2 name="play-circle" size={58} color="#fff" />
                 <Text style={styles.playText}>Play Trailer</Text>
               </View>
             </TouchableOpacity>
@@ -139,7 +148,7 @@ const MovieDetailScreen = () => {
           {!trailerLoaded && (
             <TouchableOpacity style={styles.playButton} onPress={loadTrailer}>
               <View style={styles.btnBkg}>
-                <Icon name="play-circle" size={58} color="#fff" />
+                <Icon2 name="play-circle" size={58} color="#fff" />
                 <Text style={styles.playText}>Load Trailer</Text>
               </View>
             </TouchableOpacity>
@@ -149,15 +158,22 @@ const MovieDetailScreen = () => {
         <View style={styles.castContainer}>
           <Text style={styles.sectionTitle}>Top Cast</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {movie.credits?.cast?.slice(0, 10).map((actor: any) => (
-              <View key={actor.id} style={styles.actorCard}>
-                <Image
-                  source={{ uri: `https://image.tmdb.org/t/p/w185${actor.profile_path}` }}
-                  style={styles.actorImage}
-                />
-                <Text style={styles.actorName}>{actor.name}</Text>
-              </View>
-            ))}
+          {movie.credits?.cast?.slice(0, 10).map((actor: any) => (
+  <TouchableOpacity
+  key={actor.id}
+  onPress={() => navigation.navigate('CastDetailScreen', { personId: actor.id })}
+>
+  <View style={styles.actorCard}>
+    <Image
+      source={{ uri: `https://image.tmdb.org/t/p/w185${actor.profile_path}` }}
+      style={styles.actorImage}
+    />
+    <Text style={styles.actorName}>{actor.name}</Text>
+  </View>
+</TouchableOpacity>
+
+))}
+
           </ScrollView>
         </View>
       </ScrollView>
@@ -174,6 +190,17 @@ const styles = StyleSheet.create({
 
 
   },
+  backbtn:{
+    height:40,
+    width:40,
+    padding:8,
+    backgroundColor:'#FFD700',
+    borderRadius:12,
+    position:"absolute",
+    marginTop:36,
+    marginStart:16,
+    zIndex: 99,
+   },
   posterContainer: {
     position: 'relative',
   },
@@ -196,7 +223,7 @@ const styles = StyleSheet.create({
   },
   playText:{
     color:"#000",
-    fontWeight:'bold',
+    fontFamily:'rubikSemi',
     fontSize:14
   },
 
@@ -207,7 +234,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: '#fff',
     fontSize: 20,
-    fontWeight: 'bold',
+    fontFamily:'MonsterBold',
     marginBottom: 20,
   },
   actorCard: {
@@ -226,6 +253,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
     marginTop: 5,
+    fontFamily:'rubikSemi',
   },
 
   safeArea: {
@@ -267,6 +295,7 @@ const styles = StyleSheet.create({
   dotText: {
     color: '#aaaaaa',
     fontSize: 14,
+    fontFamily:'rubikSemi',
   },
 
   gradientOverlay: {
@@ -284,7 +313,7 @@ const styles = StyleSheet.create({
   title: {
     color: '#fff',
     fontSize: 22,
-    fontWeight: 'bold',
+    fontFamily:'MonsterBold'
   },
 
   releaseDate: {
@@ -295,6 +324,7 @@ const styles = StyleSheet.create({
   rating: {
     color: '#FFD700',
     fontSize: 16,
+    fontFamily:'rubikSemi',
     marginBottom: 10,
   },
   overview: {
@@ -302,6 +332,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
     marginBottom: 20,
+    fontFamily:'rubik',
   },
   loadingContainer: {
     flex: 1,
@@ -318,6 +349,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#fff',
     fontSize: 18,
+    fontFamily:'rubikSemi',
     fontWeight: '600',
   },
 });

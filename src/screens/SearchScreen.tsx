@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
       color: '#fff',
       fontSize: 16,
       marginBottom: 10,
+      fontFamily:'rubik',
     },
     list: {
       paddingBottom: 20,
@@ -162,18 +163,20 @@ const styles = StyleSheet.create({
     title: {
       color: '#fff',
       fontSize: 16,
-      fontWeight: 'bold',
+      fontFamily:'MonsterBold',
     },
     date: {
       color: '#aaa',
       marginTop: 5,
       fontSize: 14,
+      fontFamily:'rubik',
     },
     noResults: {
       color: '#aaa',
       textAlign: 'center',
       marginTop: 30,
       fontSize: 16,
+      fontFamily:'rubikSemi',
     },
   });
   

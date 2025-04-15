@@ -46,13 +46,12 @@ const styles = StyleSheet.create({
     },
     title: {
       fontSize: 20,
-      fontWeight: 'bold',
-      fontFamily: 'montserrat',
+      fontFamily:'MonsterBold',
       color: '#fff',
     },
     titleGold: {
       fontSize: 22,
-      fontWeight: 'bold',
+      fontFamily:'MonsterBold',
       color: '#FFD700',
     },
    

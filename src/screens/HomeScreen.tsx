@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     color: '#fff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontFamily:'MonsterBold',
 
 
     paddingHorizontal: 10,
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
   seeAllText: {
     color: '#FFD700',
     fontSize: 14,
-    fontWeight: 'bold',
+    fontFamily:'MonsterBold',
   },
   card: {
     width: CARD_WIDTH,
