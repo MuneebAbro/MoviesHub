@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList, Image, Dimensions, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import SmolMovieCard from '../general/smolMovieCard'; // adjust path if needed
 
-const { width } = Dimensions.get('window');
 const ITEM_WIDTH = 120;
-const ITEM_HEIGHT = 180;
 const ITEM_SPACING = 12;
 
 interface Movie {
@@ -14,14 +13,13 @@ interface Movie {
 
 interface Props {
   movies: Movie[];
-  onPress: (movieId: string) => void; // Add the onPress callback
+  onPress: (movieId: string) => void;
 }
 
 const MovieList: React.FC<Props> = ({ movies, onPress }) => {
   const renderItem = ({ item }: { item: Movie }) => (
-    <TouchableOpacity onPress={() => onPress(item.id)} style={styles.itemContainer} activeOpacity={1}>
-      <Image source={item.poster} style={styles.poster} />
-      
+    <TouchableOpacity onPress={() => onPress(item.id)} style={styles.itemContainer} activeOpacity={0.9}>
+      <SmolMovieCard poster={item.poster} />
     </TouchableOpacity>
   );
 
@@ -45,22 +43,6 @@ const styles = StyleSheet.create({
   itemContainer: {
     width: ITEM_WIDTH,
     marginRight: ITEM_SPACING,
-    position: 'relative',
-  },
-  poster: {
-    width: ITEM_WIDTH,
-    height: ITEM_HEIGHT,
-    borderRadius: 10,
-    backgroundColor: '#333',
-  },
-  title: {
-    color: '#fff',
-    fontSize: 13,
-    marginTop: 12,
-    textAlign: 'center',
-    position: 'absolute',
-    bottom: 8, // Position the title at the bottom of the poster
-    width: '100%',
   },
 });
 

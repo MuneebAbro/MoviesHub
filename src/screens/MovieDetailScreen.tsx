@@ -6,7 +6,8 @@ import { RootStackParamList } from '../navigation/Navigation';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { SafeAreaView, StatusBar, Platform } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-
+import { Linking, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons'; // make sure you have this installed
 
 type MovieDetailRouteProp = RouteProp<RootStackParamList, 'MovieDetail'>;
 
@@ -16,21 +17,26 @@ const MovieDetailScreen = () => {
   const [movie, setMovie] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [imageLoading, setImageLoading] = useState<boolean>(true); // Track image loading state
+  const [trailerUrl, setTrailerUrl] = useState<string | null>(null);
+  const [trailerLoaded, setTrailerLoaded] = useState<boolean>(false); // Track whether the trailer has been loaded
 
   // Fetch movie details
   useEffect(() => {
+    // 👇 Updated API call to include credits but not videos initially
     const fetchMovieDetails = async () => {
       try {
         const response = await axios.get(
           `https://api.themoviedb.org/3/movie/${movieId}?append_to_response=credits`,
           {
             headers: {
-              Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNWJkMjQ1ZWM2OTQ2OTg0OWM4ZmU1ZmFlMzcxMjRiYiIsIm5iZiI6MTc0NDI3MzUyMC43MDcsInN1YiI6IjY3Zjc4MDcwZWE4MGQ4NTE3NTk5NTgxNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.9sy-_j8LGrabTBwQhhVo1p3Snc0rRUG9GBcXjtOSogA', // Replace with your API key
+              Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNWJkMjQ1ZWM2OTQ2OTg0OWM4ZmU1ZmFlMzcxMjRiYiIsIm5iZiI6MTc0NDI3MzUyMC43MDcsInN1YiI6IjY3Zjc4MDcwZWE4MGQ4NTE3NTk5NTgxNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.9sy-_j8LGrabTBwQhhVo1p3Snc0rRUG9GBcXjtOSogA',
               Accept: 'application/json',
             },
           }
         );
-        setMovie(response.data);
+        const data = response.data;
+        setMovie(data);
+
         setLoading(false);
       } catch (error) {
         console.error('Error fetching movie details:', error);
@@ -42,8 +48,30 @@ const MovieDetailScreen = () => {
   }, [movieId]);
 
   // Handle image loading state
-  const handleImageLoad = () => {
-    setImageLoading(false); // Set image loading state to false when image is loaded
+  const handleImageLoad = () => setImageLoading(false);
+
+  // Function to load the trailer URL when the button is clicked
+  const loadTrailer = async () => {
+    try {
+      const response = await axios.get(
+        `https://api.themoviedb.org/3/movie/${movieId}/videos`,
+        {
+          headers: {
+            Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhNWJkMjQ1ZWM2OTQ2OTg0OWM4ZmU1ZmFlMzcxMjRiYiIsIm5iZiI6MTc0NDI3MzUyMC43MDcsInN1YiI6IjY3Zjc4MDcwZWE4MGQ4NTE3NTk5NTgxNCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.9sy-_j8LGrabTBwQhhVo1p3Snc0rRUG9GBcXjtOSogA',
+            Accept: 'application/json',
+          },
+        }
+      );
+      const data = response.data;
+      const trailer = data.results?.find((vid: any) => vid.type === 'Trailer' && vid.site === 'YouTube');
+
+      if (trailer) {
+        setTrailerUrl(`https://www.youtube.com/watch?v=${trailer.key}`);
+        setTrailerLoaded(true); // Set trailer as loaded
+      }
+    } catch (error) {
+      console.error('Error loading trailer:', error);
+    }
   };
 
   // If loading, show the loader
@@ -71,31 +99,51 @@ const MovieDetailScreen = () => {
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 20 }}>
         <View style={styles.posterContainer}>
           {imageLoading && <View style={styles.placeholder} />}
+          {imageLoading && (
+            <View style={styles.placeholder}>
+              <ActivityIndicator size="small" color="#FFD700" />
+            </View>
+          )}
+
           <Image
             source={{ uri: `https://image.tmdb.org/t/p/w780${movie.poster_path}` }}
             style={styles.poster}
             onLoad={handleImageLoad}
+            resizeMode="cover"
           />
-          <LinearGradient
-            colors={['transparent', 'rgba(0,0,0,0.8)']}
-            style={styles.gradientOverlay}>
+
+          <LinearGradient colors={['transparent', 'rgba(0,0,0,0.8)']} style={styles.gradientOverlay}>
             <Text style={styles.title}>{movie.title}</Text>
           </LinearGradient>
-
-
         </View>
 
         <View style={styles.detailsContainer}>
           <View style={styles.infoRow}>
-            <Text style={styles.dotText}>• {movie.release_date?.split('-')[0]}      </Text>
-
-            <Text style={styles.dotText}>• {Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m      </Text>
-            <Text style={styles.dotText}>•{Math.round(movie.vote_average)}/10                           </Text>
+            <Text style={styles.dotText}>• {movie.release_date?.split('-')[0]}</Text>
+            <Text style={styles.dotText}>• {Math.floor(movie.runtime / 60)}h {movie.runtime % 60}m</Text>
+            <Text style={styles.dotText}>• {Math.round(movie.vote_average)}/10</Text>
             <Text style={styles.dotText}>• {movie.genres?.map((g: any) => g.name).join(', ')}</Text>
-
           </View>
 
           <Text style={styles.overview}>{movie.overview}</Text>
+          {trailerUrl && trailerLoaded && (
+            <TouchableOpacity style={styles.playButton} onPress={() => Linking.openURL(trailerUrl)}>
+              <View style={styles.btnBkg}>
+                <Icon name="play-circle" size={58} color="#fff" />
+                <Text style={styles.playText}>Play Trailer</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+
+          {/* Show the play trailer button only if the trailer is not loaded yet */}
+          {!trailerLoaded && (
+            <TouchableOpacity style={styles.playButton} onPress={loadTrailer}>
+              <View style={styles.btnBkg}>
+                <Icon name="play-circle" size={58} color="#fff" />
+                <Text style={styles.playText}>Load Trailer</Text>
+              </View>
+            </TouchableOpacity>
+          )}
         </View>
 
         <View style={styles.castContainer}>
@@ -112,12 +160,12 @@ const MovieDetailScreen = () => {
             ))}
           </ScrollView>
         </View>
-
       </ScrollView>
     </SafeAreaView>
   );
-
 };
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -129,6 +177,29 @@ const styles = StyleSheet.create({
   posterContainer: {
     position: 'relative',
   },
+  playButton: {
+              // Distance from the right side
+    borderRadius: 12,    // Makes it circular
+    width: 150,           // Width of the button
+    height: 60,          // Height of the button (same as width for circular)
+
+    zIndex: 999,         // Ensure it stays on top of other elements
+  }
+  ,
+  btnBkg:{
+    flexDirection:'row',
+    backgroundColor:"#FFD700",
+    borderRadius:12,
+    justifyContent:"space-between",
+    alignItems:'center',
+    paddingEnd:10
+  },
+  playText:{
+    color:"#000",
+    fontWeight:'bold',
+    fontSize:14
+  },
+
   castContainer: {
     marginTop: 20,
     paddingHorizontal: 15,
@@ -170,6 +241,9 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: '#555',
+    justifyContent: 'center', // centers vertically
+    alignItems: 'center',     // centers horizontally
+    zIndex: 1,
 
     height: 500,
   },

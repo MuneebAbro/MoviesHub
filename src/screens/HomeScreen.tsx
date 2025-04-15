@@ -6,9 +6,10 @@ import {
   Animated,
   Image,
   Dimensions,
-  ScrollView, 
+  ScrollView,
   TouchableOpacity,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import TopBar from '../components/homeScreen/TopBar';
 import MovieList from '../components/homeScreen/MovieList';
@@ -32,7 +33,7 @@ interface Movie {
   poster: any;
 }
 
-const placeholderImage = require('../assets/movie.jpg'); // Import your placeholder image
+
 
 const HomeScreen = () => {
 
@@ -62,16 +63,16 @@ const HomeScreen = () => {
           .map((movie: any) => ({
             id: movie.id.toString(),
             title: movie.title,
-            poster: movie.poster_path
-              ? { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }
-              : placeholderImage,
+            poster: { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` },
           }));
 
+
         const paddedTrending = [
-          { id: 'left-spacer', title: '', poster: null },
+          { id: 'left-spacer', title: '', poster: undefined },
           ...trending,
-          { id: 'right-spacer', title: '', poster: null },
+          { id: 'right-spacer', title: '', poster: undefined },
         ];
+
 
         setTrendingMovies(paddedTrending);
         setLoading(false);
@@ -87,9 +88,9 @@ const HomeScreen = () => {
           .map((movie: any) => ({
             id: movie.id.toString(),
             title: movie.title,
-            poster: movie.poster_path
-              ? { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }
-              : placeholderImage,
+            poster:
+              { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }
+
           }));
 
         setAllMovies(allMovies);
@@ -106,9 +107,9 @@ const HomeScreen = () => {
           .map((movie: any) => ({
             id: movie.id.toString(),
             title: movie.title,
-            poster: movie.poster_path
-              ? { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }
-              : placeholderImage,
+            poster:
+              { uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }
+
           }));
 
         setUpcomingMovies(upcomingMovies);
@@ -123,36 +124,29 @@ const HomeScreen = () => {
   }, []);
 
   const renderMovieCard = ({ item, index }: { item: Movie; index: number }) => {
-    if (!item.poster) return <View style={{ width: SPACER_WIDTH }} />;
-  
+    // If it's a placeholder, render an invisible spacer
+    if (!item.poster) {
+      return <View style={{ width: SPACER_WIDTH }} />;
+    }
+
     const inputRange = [
       (index - 2) * ITEM_SIZE,
       (index - 1) * ITEM_SIZE,
       index * ITEM_SIZE,
     ];
-  
+
     const scale = scrollX.interpolate({
       inputRange,
       outputRange: [0.8, 1, 0.8],
       extrapolate: 'clamp',
     });
-  
+
     const opacity = scrollX.interpolate({
       inputRange,
       outputRange: [0.5, 1, 0.5],
       extrapolate: 'clamp',
     });
-  
-    // If it's a placeholder, render non-touchable
-    if (item.id.startsWith('placeholder')) {
-      return (
-        <View style={styles.card}>
-          <MovieCard poster={item.poster} scale={scale} opacity={opacity} />
-        </View>
-      );
-    }
-  
-    // Normal interactive movie card
+
     return (
       <TouchableOpacity
         onPress={() => navigation.navigate('MovieDetail', { movieId: item.id })}
@@ -163,17 +157,21 @@ const HomeScreen = () => {
       </TouchableOpacity>
     );
   };
-  
-  
 
-  const placeholderPoster = require('../assets/movie.jpg');
 
-// Placeholder movies (like 5 dummies)
-const placeholderMovies = Array.from({ length: 3 }).map((_, index) => ({
-  id: `placeholder-${index}`,
-  title: 'Loading...',
-  poster: placeholderPoster,
-}));
+
+
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <StatusBar backgroundColor="#121212" barStyle="light-content" />
+        <ActivityIndicator size="large" color="#FFD700" />
+
+      </View>
+    );
+  }
+
 
   return (
     <View style={styles.container}>
@@ -184,21 +182,21 @@ const placeholderMovies = Array.from({ length: 3 }).map((_, index) => ({
         <View style={styles.content}>
           {/* Trending Movies Section */}
           <Animated.FlatList
-  data={trendingMovies.length > 0 ? trendingMovies : placeholderMovies}
-  horizontal
-  keyExtractor={(item) => item.id}
-  showsHorizontalScrollIndicator={false}
-  contentContainerStyle={styles.scrollContent}
-  renderItem={renderMovieCard}
-  snapToInterval={ITEM_SIZE}
-  decelerationRate="fast"
-  bounces={false}
-  onScroll={Animated.event(
-    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
-    { useNativeDriver: true }
-  )}
-  scrollEventThrottle={16}
-/>
+            data={trendingMovies}
+            horizontal
+            keyExtractor={(item) => item.id}
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.scrollContent}
+            renderItem={renderMovieCard}
+            snapToInterval={ITEM_SIZE}
+            decelerationRate="fast"
+            bounces={false}
+            onScroll={Animated.event(
+              [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+              { useNativeDriver: true }
+            )}
+            scrollEventThrottle={16}
+          />
 
           {/* All Movies Section */}
           <View style={styles.sectionHeaderList}>
@@ -208,13 +206,13 @@ const placeholderMovies = Array.from({ length: 3 }).map((_, index) => ({
             </TouchableOpacity>
           </View>
           <MovieList
-  movies={allMovies.length > 0 ? allMovies : placeholderMovies}
-  onPress={(movieId) => {
-    if (!movieId.startsWith('placeholder')) {
-      navigation.navigate('MovieDetail', { movieId });
-    }
-  }}
-/>
+            movies={allMovies}
+            onPress={(movieId) => {
+              if (!movieId.startsWith('placeholder')) {
+                navigation.navigate('MovieDetail', { movieId });
+              }
+            }}
+          />
 
 
           {/* Upcoming Movies Section */}
@@ -225,13 +223,13 @@ const placeholderMovies = Array.from({ length: 3 }).map((_, index) => ({
             </TouchableOpacity>
           </View>
           <MovieList
-  movies={upcomingMovies.length > 0 ? upcomingMovies : placeholderMovies}
-  onPress={(movieId) => {
-    if (!movieId.startsWith('placeholder')) {
-      navigation.navigate('MovieDetail', { movieId });
-    }
-  }}
-/>
+            movies={upcomingMovies}
+            onPress={(movieId) => {
+              if (!movieId.startsWith('placeholder')) {
+                navigation.navigate('MovieDetail', { movieId });
+              }
+            }}
+          />
         </View>
       </ScrollView>
     </View>
@@ -240,7 +238,7 @@ const placeholderMovies = Array.from({ length: 3 }).map((_, index) => ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor : '#121212'
+    backgroundColor: '#121212'
   },
   loadingContainer: {
     flex: 1,
@@ -253,10 +251,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
   },
-  
+
   scrollViewContainer: {
     flex: 1,
   },
+  spacer: {
+    width: SPACER_WIDTH,
+  },
+
   content: {
     flex: 1,
     marginTop: 12,
@@ -265,8 +267,8 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: 'bold',
-    
-   
+
+
     paddingHorizontal: 10,
   },
   scrollContent: {
@@ -289,7 +291,7 @@ const styles = StyleSheet.create({
   },
   seeAllButton: {
     padding: 5,
-    
+
   },
   seeAllText: {
     color: '#FFD700',
@@ -297,10 +299,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   card: {
-    width: CARD_WIDTH ,
+    width: CARD_WIDTH,
     marginHorizontal: SPACING / 2,
     alignItems: 'center',
-    marginBottom:30
+    marginBottom: 30
   },
   poster: {
     width: '100%',

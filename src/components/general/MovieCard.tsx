@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Image, StyleSheet, Dimensions, Animated } from 'react-native';
+import { View, Image, StyleSheet, Dimensions, Animated, ActivityIndicator } from 'react-native';
 
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.7;
@@ -17,10 +17,16 @@ const MovieCard = ({ poster, scale, opacity }: MovieCardProps) => {
 
   return (
     <Animated.View style={[styles.card, { transform: [{ scale }], opacity }]}>
-      {/* placeholder behind */}
-      <View style={styles.placeholderCard} />
-      
-      {/* actual image on top */}
+      {/* Placeholder with loading spinner */}
+      <View style={styles.placeholderCard}>
+        {!imageLoaded && (
+          <View style={styles.loaderContainer}>
+            <ActivityIndicator size="small" color="#FFD700" />
+          </View>
+        )}
+      </View>
+
+      {/* Image appears on top when loaded */}
       <Image
         source={poster}
         style={[styles.poster, { opacity: imageLoaded ? 1 : 0 }]}
@@ -45,7 +51,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: POSTER_HEIGHT,
     borderRadius: 12,
-    position: 'absolute', // stack on top of placeholder
+    position: 'absolute',
     top: 0,
     left: 0,
   },
@@ -54,5 +60,13 @@ const styles = StyleSheet.create({
     height: POSTER_HEIGHT,
     borderRadius: 12,
     backgroundColor: '#2e2e2e',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loaderContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
   },
 });
